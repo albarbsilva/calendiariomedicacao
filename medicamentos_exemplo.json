@@ -1,0 +1,91 @@
+{
+  "medicamentos": [
+    {
+      "id": 1,
+      "nome": "Omeprazol",
+      "dosagem": "20mg",
+      "horarios": [
+        "08:00"
+      ],
+      "frequencia": "diário",
+      "observacoes": "Tomar em jejum, 30 minutos antes do café",
+      "ativo": true,
+      "data_cadastro": "2026-02-16 09:00:00"
+    },
+    {
+      "id": 2,
+      "nome": "Losartana",
+      "dosagem": "50mg",
+      "horarios": [
+        "09:00",
+        "21:00"
+      ],
+      "frequencia": "2x ao dia",
+      "observacoes": "Para controle da pressão arterial",
+      "ativo": true,
+      "data_cadastro": "2026-02-16 09:05:00"
+    },
+    {
+      "id": 3,
+      "nome": "Vitamina D",
+      "dosagem": "7000 UI",
+      "horarios": [
+        "12:00"
+      ],
+      "frequencia": "diário",
+      "observacoes": "Tomar após o almoço",
+      "ativo": true,
+      "data_cadastro": "2026-02-16 09:10:00"
+    }
+  ],
+  "historico": [
+    {
+      "medicamento_id": 1,
+      "medicamento_nome": "Omeprazol",
+      "dosagem": "20mg",
+      "horario_planejado": "08:00",
+      "horario_tomado": "2026-02-16 08:05:00",
+      "data": "2026-02-16"
+    },
+    {
+      "medicamento_id": 2,
+      "medicamento_nome": "Losartana",
+      "dosagem": "50mg",
+      "horario_planejado": "09:00",
+      "horario_tomado": "2026-02-16 09:10:00",
+      "data": "2026-02-16"
+    },
+    {
+      "medicamento_id": 1,
+      "medicamento_nome": "Omeprazol",
+      "dosagem": "20mg",
+      "horario_planejado": "08:00",
+      "horario_tomado": "2026-02-15 08:00:00",
+      "data": "2026-02-15"
+    },
+    {
+      "medicamento_id": 2,
+      "medicamento_nome": "Losartana",
+      "dosagem": "50mg",
+      "horario_planejado": "09:00",
+      "horario_tomado": "2026-02-15 09:05:00",
+      "data": "2026-02-15"
+    },
+    {
+      "medicamento_id": 2,
+      "medicamento_nome": "Losartana",
+      "dosagem": "50mg",
+      "horario_planejado": "21:00",
+      "horario_tomado": "2026-02-15 21:00:00",
+      "data": "2026-02-15"
+    },
+    {
+      "medicamento_id": 3,
+      "medicamento_nome": "Vitamina D",
+      "dosagem": "7000 UI",
+      "horario_planejado": "12:00",
+      "horario_tomado": "2026-02-15 12:15:00",
+      "data": "2026-02-15"
+    }
+  ]
+}
