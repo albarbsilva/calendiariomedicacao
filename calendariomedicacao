@@ -1,0 +1,370 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Calendário de Medicação
+Sistema completo para gerenciar medicamentos, horários e histórico
+"""
+
+import json
+import os
+from datetime import datetime, timedelta
+from typing import List, Dict, Optional
+import time
+
+class CalendarioMedicacao:
+    def __init__(self, arquivo_dados: str = "medicamentos.json"):
+        self.arquivo_dados = arquivo_dados
+        self.medicamentos: List[Dict] = []
+        self.historico: List[Dict] = []
+        self.carregar_dados()
+    
+    def carregar_dados(self):
+        """Carrega os dados salvos do arquivo JSON"""
+        if os.path.exists(self.arquivo_dados):
+            try:
+                with open(self.arquivo_dados, 'r', encoding='utf-8') as f:
+                    dados = json.load(f)
+                    self.medicamentos = dados.get('medicamentos', [])
+                    self.historico = dados.get('historico', [])
+                print(f"✅ Dados carregados com sucesso!")
+            except Exception as e:
+                print(f"⚠️  Erro ao carregar dados: {e}")
+                self.medicamentos = []
+                self.historico = []
+        else:
+            print("📝 Nenhum dado anterior encontrado. Iniciando novo calendário.")
+    
+    def salvar_dados(self):
+        """Salva os dados no arquivo JSON"""
+        try:
+            dados = {
+                'medicamentos': self.medicamentos,
+                'historico': self.historico
+            }
+            with open(self.arquivo_dados, 'w', encoding='utf-8') as f:
+                json.dump(dados, f, ensure_ascii=False, indent=2)
+            print("💾 Dados salvos com sucesso!")
+        except Exception as e:
+            print(f"❌ Erro ao salvar dados: {e}")
+    
+    def adicionar_medicamento(self):
+        """Adiciona um novo medicamento"""
+        print("\n" + "="*50)
+        print("📋 ADICIONAR NOVO MEDICAMENTO")
+        print("="*50)
+        
+        nome = input("Nome do medicamento: ").strip()
+        if not nome:
+            print("❌ Nome inválido!")
+            return
+        
+        dosagem = input("Dosagem (ex: 500mg, 1 comprimido): ").strip()
+        
+        print("\nHorários (digite 'fim' para terminar):")
+        horarios = []
+        while True:
+            horario = input(f"Horário {len(horarios)+1} (HH:MM): ").strip()
+            if horario.lower() == 'fim':
+                break
+            try:
+                datetime.strptime(horario, "%H:%M")
+                horarios.append(horario)
+            except ValueError:
+                print("❌ Formato inválido! Use HH:MM (ex: 08:30)")
+        
+        if not horarios:
+            print("❌ Adicione pelo menos um horário!")
+            return
+        
+        frequencia = input("Frequência (ex: diário, 2x/semana): ").strip()
+        observacoes = input("Observações (opcional): ").strip()
+        
+        medicamento = {
+            'id': len(self.medicamentos) + 1,
+            'nome': nome,
+            'dosagem': dosagem,
+            'horarios': horarios,
+            'frequencia': frequencia,
+            'observacoes': observacoes,
+            'ativo': True,
+            'data_cadastro': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        }
+        
+        self.medicamentos.append(medicamento)
+        self.salvar_dados()
+        print(f"\n✅ Medicamento '{nome}' adicionado com sucesso!")
+    
+    def listar_medicamentos(self):
+        """Lista todos os medicamentos cadastrados"""
+        print("\n" + "="*50)
+        print("📋 LISTA DE MEDICAMENTOS")
+        print("="*50)
+        
+        if not self.medicamentos:
+            print("Nenhum medicamento cadastrado.")
+            return
+        
+        ativos = [m for m in self.medicamentos if m.get('ativo', True)]
+        
+        for med in ativos:
+            status = "🟢" if med.get('ativo', True) else "🔴"
+            print(f"\n{status} ID: {med['id']}")
+            print(f"   Nome: {med['nome']}")
+            print(f"   Dosagem: {med['dosagem']}")
+            print(f"   Horários: {', '.join(med['horarios'])}")
+            print(f"   Frequência: {med['frequencia']}")
+            if med.get('observacoes'):
+                print(f"   Obs: {med['observacoes']}")
+    
+    def marcar_dose_tomada(self):
+        """Marca uma dose como tomada"""
+        print("\n" + "="*50)
+        print("✅ MARCAR DOSE TOMADA")
+        print("="*50)
+        
+        self.listar_medicamentos()
+        
+        if not self.medicamentos:
+            return
+        
+        try:
+            med_id = int(input("\nID do medicamento: "))
+            medicamento = next((m for m in self.medicamentos if m['id'] == med_id), None)
+            
+            if not medicamento:
+                print("❌ Medicamento não encontrado!")
+                return
+            
+            print(f"\nHorários disponíveis para {medicamento['nome']}:")
+            for i, horario in enumerate(medicamento['horarios'], 1):
+                print(f"{i}. {horario}")
+            
+            horario_idx = int(input("\nEscolha o número do horário: ")) - 1
+            
+            if 0 <= horario_idx < len(medicamento['horarios']):
+                horario = medicamento['horarios'][horario_idx]
+                
+                registro = {
+                    'medicamento_id': med_id,
+                    'medicamento_nome': medicamento['nome'],
+                    'dosagem': medicamento['dosagem'],
+                    'horario_planejado': horario,
+                    'horario_tomado': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    'data': datetime.now().strftime("%Y-%m-%d")
+                }
+                
+                self.historico.append(registro)
+                self.salvar_dados()
+                print(f"\n✅ Dose de {medicamento['nome']} marcada como tomada!")
+            else:
+                print("❌ Horário inválido!")
+                
+        except ValueError:
+            print("❌ Entrada inválida!")
+    
+    def ver_historico(self):
+        """Mostra o histórico de doses tomadas"""
+        print("\n" + "="*50)
+        print("📊 HISTÓRICO DE MEDICAÇÃO")
+        print("="*50)
+        
+        if not self.historico:
+            print("Nenhum histórico registrado.")
+            return
+        
+        # Filtrar por período
+        print("\n1. Hoje")
+        print("2. Últimos 7 dias")
+        print("3. Últimos 30 dias")
+        print("4. Tudo")
+        
+        try:
+            opcao = int(input("\nEscolha o período: "))
+            
+            hoje = datetime.now()
+            historico_filtrado = self.historico
+            
+            if opcao == 1:
+                data_filtro = hoje.strftime("%Y-%m-%d")
+                historico_filtrado = [h for h in self.historico if h['data'] == data_filtro]
+            elif opcao == 2:
+                data_limite = (hoje - timedelta(days=7)).strftime("%Y-%m-%d")
+                historico_filtrado = [h for h in self.historico if h['data'] >= data_limite]
+            elif opcao == 3:
+                data_limite = (hoje - timedelta(days=30)).strftime("%Y-%m-%d")
+                historico_filtrado = [h for h in self.historico if h['data'] >= data_limite]
+            
+            if not historico_filtrado:
+                print("\n📭 Nenhum registro encontrado neste período.")
+                return
+            
+            # Agrupar por data
+            por_data = {}
+            for registro in historico_filtrado:
+                data = registro['data']
+                if data not in por_data:
+                    por_data[data] = []
+                por_data[data].append(registro)
+            
+            for data in sorted(por_data.keys(), reverse=True):
+                print(f"\n📅 {data}")
+                print("-" * 50)
+                for reg in por_data[data]:
+                    print(f"   ✅ {reg['medicamento_nome']} ({reg['dosagem']})")
+                    print(f"      Planejado: {reg['horario_planejado']} | Tomado: {reg['horario_tomado'].split()[1]}")
+            
+            print(f"\n📊 Total de doses: {len(historico_filtrado)}")
+            
+        except ValueError:
+            print("❌ Opção inválida!")
+    
+    def lembretes_hoje(self):
+        """Mostra os lembretes de medicação para hoje"""
+        print("\n" + "="*50)
+        print("⏰ LEMBRETES DE HOJE")
+        print("="*50)
+        
+        hoje = datetime.now().strftime("%Y-%m-%d")
+        hora_atual = datetime.now().strftime("%H:%M")
+        
+        # Verificar quais doses já foram tomadas hoje
+        doses_tomadas_hoje = [
+            (h['medicamento_id'], h['horario_planejado']) 
+            for h in self.historico 
+            if h['data'] == hoje
+        ]
+        
+        lembretes_pendentes = []
+        lembretes_futuros = []
+        
+        for med in self.medicamentos:
+            if not med.get('ativo', True):
+                continue
+                
+            for horario in med['horarios']:
+                if (med['id'], horario) not in doses_tomadas_hoje:
+                    if horario <= hora_atual:
+                        lembretes_pendentes.append((med, horario, 'pendente'))
+                    else:
+                        lembretes_futuros.append((med, horario, 'futuro'))
+        
+        if lembretes_pendentes:
+            print("\n🔔 PENDENTES (não tomados):")
+            print("-" * 50)
+            for med, horario, _ in lembretes_pendentes:
+                print(f"   ⏰ {horario} - {med['nome']} ({med['dosagem']})")
+        
+        if lembretes_futuros:
+            print("\n📅 PRÓXIMOS:")
+            print("-" * 50)
+            for med, horario, _ in lembretes_futuros:
+                print(f"   ⏰ {horario} - {med['nome']} ({med['dosagem']})")
+        
+        if not lembretes_pendentes and not lembretes_futuros:
+            print("\n✅ Todas as doses de hoje foram tomadas!")
+        
+        # Estatísticas
+        total_hoje = len(lembretes_pendentes) + len(lembretes_futuros) + len([h for h in self.historico if h['data'] == hoje])
+        tomadas_hoje = len([h for h in self.historico if h['data'] == hoje])
+        
+        if total_hoje > 0:
+            print(f"\n📊 Progresso de hoje: {tomadas_hoje}/{total_hoje} doses ({int(tomadas_hoje/total_hoje*100)}%)")
+    
+    def remover_medicamento(self):
+        """Remove ou desativa um medicamento"""
+        print("\n" + "="*50)
+        print("🗑️  REMOVER MEDICAMENTO")
+        print("="*50)
+        
+        self.listar_medicamentos()
+        
+        if not self.medicamentos:
+            return
+        
+        try:
+            med_id = int(input("\nID do medicamento para remover: "))
+            medicamento = next((m for m in self.medicamentos if m['id'] == med_id), None)
+            
+            if not medicamento:
+                print("❌ Medicamento não encontrado!")
+                return
+            
+            print(f"\nDeseja realmente remover '{medicamento['nome']}'?")
+            print("1. Desativar (mantém histórico)")
+            print("2. Remover completamente")
+            print("3. Cancelar")
+            
+            opcao = int(input("\nEscolha: "))
+            
+            if opcao == 1:
+                medicamento['ativo'] = False
+                self.salvar_dados()
+                print(f"\n✅ Medicamento '{medicamento['nome']}' desativado!")
+            elif opcao == 2:
+                self.medicamentos.remove(medicamento)
+                self.salvar_dados()
+                print(f"\n✅ Medicamento '{medicamento['nome']}' removido!")
+            
+        except ValueError:
+            print("❌ Entrada inválida!")
+    
+    def menu_principal(self):
+        """Menu principal do sistema"""
+        while True:
+            print("\n" + "="*50)
+            print("💊 CALENDÁRIO DE MEDICAÇÃO")
+            print("="*50)
+            print("1. 📋 Listar medicamentos")
+            print("2. ➕ Adicionar medicamento")
+            print("3. ✅ Marcar dose tomada")
+            print("4. ⏰ Ver lembretes de hoje")
+            print("5. 📊 Ver histórico")
+            print("6. 🗑️  Remover medicamento")
+            print("7. 🚪 Sair")
+            print("="*50)
+            
+            try:
+                opcao = input("\nEscolha uma opção: ").strip()
+                
+                if opcao == '1':
+                    self.listar_medicamentos()
+                elif opcao == '2':
+                    self.adicionar_medicamento()
+                elif opcao == '3':
+                    self.marcar_dose_tomada()
+                elif opcao == '4':
+                    self.lembretes_hoje()
+                elif opcao == '5':
+                    self.ver_historico()
+                elif opcao == '6':
+                    self.remover_medicamento()
+                elif opcao == '7':
+                    print("\n👋 Até logo! Cuide-se bem!")
+                    break
+                else:
+                    print("❌ Opção inválida!")
+                
+                input("\nPressione ENTER para continuar...")
+                
+            except KeyboardInterrupt:
+                print("\n\n👋 Até logo!")
+                break
+            except Exception as e:
+                print(f"\n❌ Erro: {e}")
+                input("\nPressione ENTER para continuar...")
+
+
+def main():
+    """Função principal"""
+    print("="*50)
+    print("💊 BEM-VINDO AO CALENDÁRIO DE MEDICAÇÃO")
+    print("="*50)
+    print("Sistema para gerenciar seus medicamentos de forma fácil!")
+    print()
+    
+    calendario = CalendarioMedicacao()
+    calendario.menu_principal()
+
+
+if __name__ == "__main__":
+    main()
