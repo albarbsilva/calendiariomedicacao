@@ -34,6 +34,4 @@ Verifique as permissões de escrita na pasta
 Certifique-se de ter espaço em disco
 
 ⚠️ Aviso importante
-Este é um sistema de auxílio pessoal. Sempre consulte seu médico sobre medicamentos e tratamentos. Este programa não substitui orientação médica profissional.
-📄 Licença
-Este código é livre para uso pessoal. Sinta-se à vontade para modificar conforme suas necessidades.
+Este sistema é apenas um estudo.
