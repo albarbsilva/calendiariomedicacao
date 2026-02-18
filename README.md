@@ -16,17 +16,6 @@ Um sistema completo feito em Python para gerenciar medicamentos, horários e his
 
 ---
 
-## 🚀 Como usar
-
-**Rode o programa:**
-```bash
-python calendario_medicacao.py
-```
-
-> Não é necessário instalar nenhuma dependência externa. O projeto usa apenas bibliotecas nativas do Python (`json`, `os`, `datetime`).
-
----
-
 ## 💻 Exemplo de uso
 
 ```
