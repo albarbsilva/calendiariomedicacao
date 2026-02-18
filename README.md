@@ -1,37 +1,91 @@
-🎨 Símbolos e indicadores
+# 💊 Calendário de Medicação
 
-🟢 Medicamento ativo
-🔴 Medicamento desativado
-✅ Dose tomada
-⏰ Horário de medicação
-🔔 Lembrete pendente
-📅 Próximo horário
-📊 Estatísticas
+Um sistema completo feito em Python para gerenciar medicamentos, horários e histórico de doses de forma simples e organizada.
 
-🔒 Privacidade
-Todos os dados são armazenados localmente no seu computador. Nenhuma informação é enviada para a internet.
-💡 Dicas
+---
 
-Configure lembretes no seu celular para os horários cadastrados
-Marque as doses assim que tomá-las para não esquecer
-Consulte o histórico regularmente para verificar se está seguindo o tratamento
-Use as observações para adicionar informações importantes (ex: "tomar com comida")
-Desative medicamentos em vez de removê-los para manter o histórico
+## 📋 Funcionalidades
 
-🆘 Solução de problemas
-Erro ao carregar dados
+- Cadastrar medicamentos com nome, dosagem, horários e observações
+- Listar todos os medicamentos ativos
+- Marcar doses como tomadas
+- Ver lembretes do dia com progresso em percentual
+- Consultar histórico por período (hoje, 7 dias, 30 dias ou tudo)
+- Desativar ou remover medicamentos
+- Salvar todos os dados automaticamente em um arquivo `.json`
 
-Verifique se o arquivo medicamentos.json não está corrompido
-Se necessário, delete o arquivo para começar do zero
+---
 
-Formato de horário inválido
+## 🚀 Como usar
 
-Use sempre o formato HH:MM (exemplo: 08:30, 14:00, 20:45)
+**Rode o programa:**
+```bash
+python calendario_medicacao.py
+```
 
-Programa não salva dados
+> Não é necessário instalar nenhuma dependência externa. O projeto usa apenas bibliotecas nativas do Python (`json`, `os`, `datetime`).
 
-Verifique as permissões de escrita na pasta
-Certifique-se de ter espaço em disco
+---
 
-⚠️ Aviso importante
-Este sistema é apenas um estudo.
+## 💻 Exemplo de uso
+
+```
+==================================================
+💊 CALENDÁRIO DE MEDICAÇÃO
+==================================================
+1. 📋 Listar medicamentos
+2. ➕ Adicionar medicamento
+3. ✅ Marcar dose tomada
+4. ⏰ Ver lembretes de hoje
+5. 📊 Ver histórico
+6. 🗑️  Remover medicamento
+7. 🚪 Sair
+==================================================
+```
+
+```
+⏰ LEMBRETES DE HOJE
+🔔 PENDENTES (não tomados):
+   ⏰ 08:00 - Losartana (50mg)
+   ⏰ 12:00 - Vitamina D (1 comprimido)
+
+📅 PRÓXIMOS:
+   ⏰ 20:00 - Losartana (50mg)
+
+📊 Progresso de hoje: 1/3 doses (33%)
+```
+
+---
+
+## 💾 Sobre o armazenamento de dados
+
+Todos os medicamentos e o histórico de doses são salvos automaticamente no arquivo `medicamentos.json` na mesma pasta do programa. Isso significa que seus dados são mantidos mesmo após fechar o programa.
+
+---
+
+## 🧰 O que foi usado
+
+- `json` — para salvar e carregar os dados em arquivo
+- `os` — para verificar se o arquivo de dados já existe
+- `datetime` e `timedelta` — para trabalhar com datas, horários e filtros de período
+- `Classes e orientação a objetos` — para organizar o sistema de forma estruturada
+- `List comprehensions` — para filtrar medicamentos e histórico de forma eficiente
+- `try/except` — para tratar erros de entrada do usuário
+
+---
+
+## 🧠 Conceitos abordados
+
+- Programação orientada a objetos com `class`
+- Leitura e escrita de arquivos com `open()` e `json`
+- Manipulação de datas e horários com `datetime`
+- Menus interativos com `while` e `input()`
+- Filtragem de listas com condições
+- Agrupamento de dados por chave
+
+---
+
+## 👩‍💻 Autora
+
+Feito com 💜 por Aline  
+Projeto de aprendizado — Python do zero!
